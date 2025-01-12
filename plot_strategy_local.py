@@ -39,6 +39,53 @@ file_path = grand_prix_files[grand_prix]
 data = pd.read_csv(file_path) 
 print(data.head())
 
+# Pre-Process and mapping the data
+
+# Mapping the tyre compounds
+compound_map = {
+    "SOFT": 1,
+    "MEDIUM": 2,
+    "HARD": 3
+}
+
+data["Compound"] = data["Compound"].map(compound_map)
+
+# Mapping the drivers
+drivers_map = {
+    "ALB": 1,  # Alexander Albon
+    "ALO": 2,  # Fernando Alonso
+    "BOT": 3,  # Valtteri Bottas
+    "HAM": 4,  # Lewis Hamilton
+    "HUL": 5,  # Nico Hulkenberg
+    "LEC": 6,  # Charles Leclerc
+    "MER": 7,  # Oscar Piastri
+    "NOR": 8,  # Lando Norris
+    "PER": 9,  # Sergio Perez
+    "RIC": 10, # Daniel Ricciardo
+    "STR": 11, # Lance Stroll
+    "TSU": 12, # Yuki Tsunoda
+    "VET": 13, # Sebastian Vettel
+    "ZHO": 14, # Zhou Guanyu
+    "GAS": 15, # Pierre Gasly
+    "SAI": 16, # Carlos Sainz
+    "VER": 17, # Max Verstappen
+    "RUS": 18, # George Russell
+    "OCO": 19, # Esteban Ocon
+    "MAG": 20, # Kevin Magnussen
+    "LAW": 21, # Liam Lawson
+    "COL": 22, # Franco Colapinto
+    "DOO": 23, # Jack Doohan
+    "BEA": 24  # Oliver Bearman
+}
+
+data["Driver"] = data["Driver"].map(drivers_map)
+
+
+
+x = [["Stint", "Compound", "Driver"] ]
+y = data["Laps"]
+
+
 # def predict_optimal_strategy(grand_prix):
 
     # # Your prediction logic here
