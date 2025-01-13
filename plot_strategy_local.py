@@ -1,10 +1,12 @@
 #Import the modules
 import fastf1 as ff1 
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import gradio as gr
+import seaborn as sns
 
 # Make a list of the grand prix files
 grand_prix_files = {
@@ -58,55 +60,52 @@ drivers_map = {
     "HAM": 4,  # Lewis Hamilton
     "HUL": 5,  # Nico Hulkenberg
     "LEC": 6,  # Charles Leclerc
-    "MER": 7,  # Oscar Piastri
+    "PIA": 7,  # Oscar Piastri
     "NOR": 8,  # Lando Norris
     "PER": 9,  # Sergio Perez
     "RIC": 10, # Daniel Ricciardo
     "STR": 11, # Lance Stroll
     "TSU": 12, # Yuki Tsunoda
-    "VET": 13, # Sebastian Vettel
     "ZHO": 14, # Zhou Guanyu
     "GAS": 15, # Pierre Gasly
     "SAI": 16, # Carlos Sainz
     "VER": 17, # Max Verstappen
     "RUS": 18, # George Russell
     "OCO": 19, # Esteban Ocon
-    "MAG": 20, # Kevin Magnussen
-    "LAW": 21, # Liam Lawson
-    "COL": 22, # Franco Colapinto
-    "DOO": 23, # Jack Doohan
-    "BEA": 24  # Oliver Bearman
+    "SAR": 20, # Logan Sargeant
+    "MAG": 21, # Kevin Magnussen
+    "LAW": 22, # Liam Lawson
+    "COL": 23, # Franco Colapinto
+    "DOO": 24, # Jack Doohan
+    "BEA": 25  # Oliver Bearman
 }
 
 data["Driver"] = data["Driver"].map(drivers_map)
 
+# Drop rows with NaN values in any column
+data = data.dropna()
 
-
-x = [["Stint", "Compound", "Driver"] ]
+x = data[["Stint", "Compound", "Driver"]]
 y = data["Laps"]
 
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
-# def predict_optimal_strategy(grand_prix):
+model = LinearRegression()
+model.fit(x_train, y_train)
 
-    # # Your prediction logic here
-    # # For example:
-    # X = data[['feature1', 'feature2']]  # Replace with actual feature columns
-    # y = data['target']  # Replace with actual target column
-    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    # model = LinearRegression()
-    # model.fit(X_train, y_train)
-    # predictions = model.predict(X_test)
-    
-    # mse = mean_squared_error(y_test, predictions)
-    # mae = mean_absolute_error(y_test, predictions)
-    # r2 = r2_score(y_test, predictions)
-    
-    # return f"MSE: {mse}, MAE: {mae}, R2: {r2}"
+predictions = model.predict(x_test)
+print(predictions)
 
-# Create the Gradio interface
-# iface = gradio.Interface(
-#     fn=predict_optimal_strategy,
-#     inputs= gradio.components.Dropdown(choices=list(grand_prix_files.keys()), label="Select Grand Prix"),
-#     outputs="text"
-# )
-# iface.launch()
+# Accuracy of the data
+mse = mean_squared_error(y_test, predictions)
+mae = mean_absolute_error(y_test, predictions)
+r2 = r2_score(y_test, predictions)
+
+# Plot the data
+plt.figure(figsize=(10,6))
+sns.scatterplot(x=y_test, y=predictions, alpha=0.7, color='b', edgecolors='k')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--')
+plt.xlabel('Laps Actual')
+plt.ylabel('Laps Predicted to Pit')
+plt.title('Optimal Lap to Pit')
+plt.show()
